@@ -24,7 +24,7 @@ public class TaskServlet extends HttpServlet {
     // endpoint
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+    setAccessControlHeaders(resp);
 
         CreateTaskRequest request = ObjectMapperConfiguration.objectMapper.readValue(req.getReader(), CreateTaskRequest.class);
 
@@ -38,6 +38,7 @@ public class TaskServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setAccessControlHeaders(resp);
         String id = req.getParameter("id");
 
         try {
@@ -49,6 +50,7 @@ public class TaskServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setAccessControlHeaders(resp);
         String id = req.getParameter("id");
 
         UpdateTaskRequest request = ObjectMapperConfiguration.objectMapper.readValue(req.getReader(), UpdateTaskRequest.class);
@@ -63,6 +65,7 @@ public class TaskServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setAccessControlHeaders(resp);
         try {
             List<Task> tasks = taskService.getTasks();
 
@@ -74,5 +77,23 @@ public class TaskServlet extends HttpServlet {
             resp.sendError(500, "Internal server error: " + e.getMessage());
         }
     }
+
+    // for pre-flight requests
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setAccessControlHeaders(resp);
+    }
+
+    // CORS configuration (Cross-Origin-Resource-Sharing)
+    private void setAccessControlHeaders(HttpServletResponse resp) {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+        resp.setHeader("Access-Control-Allow-Headers", "content-type");
+    }
 }
+
+
+
+
+
 
